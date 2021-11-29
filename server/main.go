@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/nao-18/golang-and-react-app/database"
+	"github.com/nao-18/golang-and-react-app/routes"
 )
 
 func main() {
@@ -10,9 +11,6 @@ func main() {
 
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
-
+	routes.Setup(app)
 	app.Listen(":9000")
 }
