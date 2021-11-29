@@ -1,4 +1,4 @@
-# golang-react-postgres-nginx-boilerplate 
+# 
 
 ## ビルドコマンド
 ~~~bash
