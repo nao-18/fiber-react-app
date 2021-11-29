@@ -45,7 +45,7 @@ services:
       context: .
       dockerfile: ./docker/node/Dockerfile
     volumes:
-      - ./client:/usr/src/app
+      - ./:/usr/src/app
     # command: sh -c "cd  && yarn start"
     ports:
       - '3000:3000'
