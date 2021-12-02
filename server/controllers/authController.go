@@ -10,5 +10,8 @@ func Register(c *fiber.Ctx) error {
 		FirstName: "john",
 	}
 
+	user.LastName = "Doe"
+	user.Email = "example@gmail.com"
+
 	return c.JSON(user)
 }
