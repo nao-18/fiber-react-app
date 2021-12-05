@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/nao-18/golang-and-react-app/database"
 	"github.com/nao-18/golang-and-react-app/models"
@@ -24,5 +26,17 @@ func CreateUser(c *fiber.Ctx) error {
 	user.SetPassword("1234")
 
 	database.DB.Create(&user)
+	return c.JSON(user)
+}
+
+func GetUser(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+
+	user := models.User{
+		Id: uint(id),
+	}
+
+	database.DB.Find(&user)
+
 	return c.JSON(user)
 }
