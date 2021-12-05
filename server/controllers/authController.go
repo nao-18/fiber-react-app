@@ -9,7 +9,6 @@ import (
 	"github.com/nao-18/golang-and-react-app/database"
 	"github.com/nao-18/golang-and-react-app/models"
 	"github.com/nao-18/golang-and-react-app/util"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func Register(c *fiber.Ctx) error {
@@ -55,7 +54,7 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(data["password"])); err != nil {
+	if err := user.ComparePassword(data["password"]); err != nil {
 		c.Status(400)
 		return c.JSON(fiber.Map{
 			"message": "incorrent password",
