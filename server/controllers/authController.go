@@ -24,11 +24,12 @@ func Register(c *fiber.Ctx) error {
 			"message": "passwords do not match",
 		})
 	}
-
+	id, _ := strconv.Atoi(data["role_id"])
 	user := models.User{
 		FirstName: data["first_name"],
 		LastName:  data["last_name"],
 		Email:     data["email"],
+		RoleId:    uint(id),
 	}
 
 	user.SetPassword(data["password"])
