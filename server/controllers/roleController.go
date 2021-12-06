@@ -16,21 +16,18 @@ func AllRoles(c *fiber.Ctx) error {
 	return c.JSON(roles)
 }
 
-type RoleCreateDTO struct {
-	name        string
-	permissions []string
-}
-
 func CreateRole(c *fiber.Ctx) error {
-	var roleDto RoleCreateDTO
+	var roleDto fiber.Map
 
 	if err := c.BodyParser(&roleDto); err != nil {
 		return err
 	}
 
-	permissions := make([]models.Permission, len(roleDto.permissions))
-	for i, permissionId := range roleDto.permissions {
-		id, _ := strconv.Atoi(permissionId)
+	list := roleDto["permissions"].([]interface{})
+	permissions := make([]models.Permission, len(list))
+
+	for i, permissionId := range list {
+		id, _ := strconv.Atoi(permissionId.(string))
 
 		permissions[i] = models.Permission{
 			Id: uint(id),
@@ -38,7 +35,7 @@ func CreateRole(c *fiber.Ctx) error {
 	}
 
 	role := models.Role{
-		Name:        roleDto.name,
+		Name:        roleDto["name"].(string),
 		Permissions: permissions,
 	}
 
@@ -53,7 +50,7 @@ func GetRole(c *fiber.Ctx) error {
 		Id: uint(id),
 	}
 
-	database.DB.Find(&role)
+	database.DB.Preload("Permissions").Find(&role)
 
 	return c.JSON(role)
 }
@@ -61,12 +58,31 @@ func GetRole(c *fiber.Ctx) error {
 func UpdateRole(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
 
-	role := models.Role{
-		Id: uint(id),
+	var roleDto fiber.Map
+
+	if err := c.BodyParser(&roleDto); err != nil {
+		return err
 	}
 
-	if err := c.BodyParser(&role); err != nil {
-		return err
+	list := roleDto["permissions"].([]interface{})
+
+	permissions := make([]models.Permission, len(list))
+
+	for i, permissionId := range list {
+		idToUpdate, _ := permissionId.(float64)
+
+		permissions[i] = models.Permission{
+			Id: uint(idToUpdate),
+		}
+	}
+
+	result := map[string]interface{}{}
+	database.DB.Table("role_permissions").Where("role_id", id).Delete(&result)
+
+	role := models.Role{
+		Id:          uint(id),
+		Name:        roleDto["name"].(string),
+		Permissions: permissions,
 	}
 
 	database.DB.Model(&role).Updates(role)
