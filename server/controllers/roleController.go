@@ -16,11 +16,30 @@ func AllRoles(c *fiber.Ctx) error {
 	return c.JSON(roles)
 }
 
-func CreateRole(c *fiber.Ctx) error {
-	var role models.Role
+type RoleCreateDTO struct {
+	name        string
+	permissions []string
+}
 
-	if err := c.BodyParser(&role); err != nil {
+func CreateRole(c *fiber.Ctx) error {
+	var roleDto RoleCreateDTO
+
+	if err := c.BodyParser(&roleDto); err != nil {
 		return err
+	}
+
+	permissions := make([]models.Permission, len(roleDto.permissions))
+	for i, permissionId := range roleDto.permissions {
+		id, _ := strconv.Atoi(permissionId)
+
+		permissions[i] = models.Permission{
+			Id: uint(id),
+		}
+	}
+
+	role := models.Role{
+		Name:        roleDto.name,
+		Permissions: permissions,
 	}
 
 	database.DB.Create(&role)
